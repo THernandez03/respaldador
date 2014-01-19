@@ -14,11 +14,18 @@ class Respaldador {
     private $directorio;
     // URL de descarga del respaldo
     private $url;
-    
-    public function Respaldador() {
-        $this->ruta = $_SERVER['DOCUMENT_ROOT'];
-        $this->directorio = "";
-        $this->url = "";
+
+    /**
+     * Constructor de la clase Respaldador
+     * @since  Enero 2014
+     * @param  string $ruta       Ruta donde están los archivos
+     * @param  string $directorio Directorio de los respaldos
+     * @param  string $url        URL de descarga
+     */
+    public function Respaldador($nombre, $directorio, $ruta = $_SERVER["DOCUMENT_ROOT"]) {
+        $this->setDirectorio($directorio);
+        $this->setNombre($nombre);
+        $this->ruta = $ruta;
         
         ini_set('max_execution_time', 3000);
     }

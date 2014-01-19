@@ -32,7 +32,17 @@
         // Mostrando URL de descarga del respaldo creado
         echo "La URL de descarga del respaldo es: " .  $respaldador->getURL() . "<br/>";
         
-        
+        /********************************************************************
+         * Prueba de clase Respaldo con constructor
+         ********************************************************************/
+
+        // Crear clase
+        $respaldador = new Respaldador("Respaldo05", "respaldos");
+        // Respaldando archivos
+        $respaldador->respaldar();
+
+        // Mostrando URL de descarga del respaldo creado
+        echo "La URL de descarga del respaldo es: " .  $respaldador->getURL() . "<br/>";
         ?>
     </body>
 </html>
