@@ -7,20 +7,27 @@
     <body>
         <?php
         include("Respaldador.php");
-        
-        //@todo Mostrar errores generados por la clase
-        
+
         /********************************************************************
          * Prueba de clase Respaldo con constructor
          ********************************************************************/
 
-        // Crear clase
-        $respaldador = new Respaldador("Respaldo05", "respaldos");
-        // Respaldando archivos
-        $respaldador->respaldar();
-
-        // Mostrando URL de descarga del respaldo creado
-        echo "La URL de descarga del respaldo es: " .  $respaldador->getURL() . "<br/>";
+        // Instanciar clase
+        try {
+            $respaldador = new Respaldador("Respaldo05", "respaldos");
+            $respaldador->respaldar();
+            
+            if ($respaldador->getError() == ''){
+                // Mostrar url de descarga
+                echo "La URL de descarga del respaldo es: " .  $respaldador->getURL() . "<br/>";
+            } else {
+                // Mostrar errores causados luego de la instancia de la clase
+                echo $respaldador->getError();
+            }
+        } catch (Exception $e) {
+            // Mostrar errores causados durante la instancia de la clase
+            echo $e->getMessage();
+        }
         ?>
     </body>
 </html>

@@ -12,8 +12,10 @@ class Respaldador {
     private $ruta;
     // Directorio donde se guardaran los respaldos.
     private $directorio;
-    // URL de descarga del respaldo
+    // URL de descarga del respaldo.
     private $url;
+    // Almacena mensaje de error en caso de que suceda.
+    private $error;
 
     /**
      * Constructor de la clase Respaldador
@@ -23,15 +25,14 @@ class Respaldador {
      * @param  string $url        URL de descarga
      */
     public function Respaldador($nombre, $directorio, $ruta = '') {
-        $this->setDirectorio($directorio);
-        $this->setNombre($nombre);
-        
         //@todo Validador de ruta
-        if ($ruta != '') {
-            $this->ruta = $ruta;
-        } else {
-            $this->ruta = $_SERVER['DOCUMENT_ROOT'];
-        }
+        $this->ruta = ($ruta == '') ? $_SERVER['DOCUMENT_ROOT'] : ruta;
+
+        if (!$this->setDirectorio($directorio))
+            throw new Exception($this->error);
+
+        if(!$this->setNombre($nombre))
+            throw new Exception($this->error);
 
         ini_set('max_execution_time', 3000);
     }
@@ -41,6 +42,7 @@ class Respaldador {
      */
     public function respaldar() {
         if (empty($this->directorio) || empty($this->nombre)) {
+            $this->error = 'No se puede crear respaldo, ya que no ha sido configurado el atributo directorio o nombre.';
             return false;
         }
 
@@ -48,6 +50,7 @@ class Respaldador {
         $archivo = $this->ruta . DIRECTORY_SEPARATOR . $this->directorio . DIRECTORY_SEPARATOR . $this->nombre . '.zip';
 
         if ($respaldo->open($archivo, ZIPARCHIVE::CREATE) !== true ) {
+            $this->error = "No se puede crear archivo .zip que almacenara el respaldo";
             return false;
         }
 
@@ -55,9 +58,19 @@ class Respaldador {
 
         $respaldo->close();
 
-
         $this->url = 'http://' . $_SERVER['SERVER_NAME'] . '/' . $this->directorio . '/' . $this->nombre . '.zip';
+        $this->error = '';
 
+    }
+
+
+    /**
+     * Obtiene el ultimo mensaje de error generado.
+     *
+     * @return String Mensaje de error
+     */
+    public function getError(){
+        return $this->error;
     }
 
     /*
@@ -128,12 +141,14 @@ class Respaldador {
 
         if (!file_exists($ruta)) {
             if (!mkdir($ruta)) {
+                $this->error = "No se puede crear directorio para guardar respaldo.";
                 return false;
             }
         }
 
         // Validar la escritura en el directorio.
         if (!is_writable($ruta)) {
+            $this->error = "El directorio no permite la escritura de archivos.";
             return false;
         } else {
             return true;
@@ -150,7 +165,7 @@ class Respaldador {
 
         // Validar que el directorio este configurado en la clase
         if (empty($this->directorio)) {
-            echo 1;
+            $this->error = "El atributo directorio no ha sido configurado.";
             return false;
         }
 
@@ -159,7 +174,7 @@ class Respaldador {
         $archivo = $this->ruta . DIRECTORY_SEPARATOR . $this->directorio . DIRECTORY_SEPARATOR . $nombre . '.zip';
 
         if (file_exists($archivo)) {
-            var_dump($archivo);
+            $this->error = "Ya existe un respaldo con ese nombre en el directorio.";
             return false;
         } else {
             return true;
@@ -170,7 +185,7 @@ class Respaldador {
 
         if (is_dir($dir)) {
             foreach (scandir($dir) as $item) {
-                if ($item == '.' || $item == '..')
+                if ($item == '.' || $item == '..' || $item == $this->directorio)
                     continue;
                 $this->comprimir($dir . DIRECTORY_SEPARATOR . $item, $zip);
             }
