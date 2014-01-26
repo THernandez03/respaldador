@@ -26,7 +26,7 @@ class Respaldador {
      */
     public function Respaldador($nombre, $directorio, $ruta = '') {
         //@todo Validador de ruta
-        $this->ruta = ($ruta == '') ? $_SERVER['DOCUMENT_ROOT'] : ruta;
+        $this->ruta = ($ruta) ? $ruta : $_SERVER['DOCUMENT_ROOT'];
 
         if (!$this->setDirectorio($directorio))
             throw new Exception($this->error);
