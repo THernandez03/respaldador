@@ -16,6 +16,8 @@ class Respaldador {
     private $url;
     // Almacena mensaje de error en caso de que suceda.
     private $error;
+    // Filtro de directorios y extensiones a excluir del respaldo.
+    private $filtros;
 
     /**
      * Constructor de la clase Respaldador
@@ -24,7 +26,7 @@ class Respaldador {
      * @param  string $directorio Directorio de los respaldos
      * @param  string $url        URL de descarga
      */
-    public function Respaldador($nombre, $directorio, $ruta = '') {
+    public function Respaldador($nombre, $directorio, $ruta = '', $filtros = array()) {
         //@todo Validador de ruta
         $this->ruta = ($ruta) ? $ruta : $_SERVER['DOCUMENT_ROOT'];
 
@@ -33,6 +35,8 @@ class Respaldador {
 
         if(!$this->setNombre($nombre))
             throw new Exception($this->error);
+        
+        $this->filtros = $filtros;
 
         ini_set('max_execution_time', 3000);
     }
@@ -218,13 +222,67 @@ class Respaldador {
 
         if (is_dir($dir)) {
             foreach (scandir($dir) as $item) {
-                if ($item == '.' || $item == '..' || $item == $this->directorio)
+                if ($item == '.' || $item == '..' || $item == $this->directorio || $this->filtrarDirectorio($dir))
                     continue;
                 $this->comprimir($dir . DIRECTORY_SEPARATOR . $item, $zip);
             }
         }else{
-            $zip->addFile($dir);
+            if(!$this->filtrarExtension($dir)){
+               $zip->addFile($dir);
+            }
         }
+    }
+    
+    /**
+     * Realiza el filtro de directorios a excluir del respaldo.
+     * @author Fiko Bórquez <darkshinjis@gmail.com>
+     * @since  Enero 2014
+     * @param string $dir El directorio a evaluar si aplica filtro.
+     * @return boolean
+     */
+    private function filtrarDirectorio($dir){
+      $dir = str_replace($this->ruta, '', $dir);
+      
+      if($dir === ''){
+        $dir = '\\';
+      }
+      
+      return $this->filtrar($dir, '*');
+    }
+    
+    /**
+     * Realiza el filtro de extensiones dentro de un directorio a excluir del respaldo.
+     * @author Fiko Bórquez <darkshinjis@gmail.com>
+     * @since  Enero 2014
+     * @param string $archivo Archivo dentro de un directorio para aplicar filtro segun extension.
+     * @return boolean
+     */
+    private function filtrarExtension($archivo){
+      $dir = dirname(str_replace($this->ruta, '', $archivo));
+      $extension = explode('.', $archivo);
+      $extension = end($extension);
+      
+      return $this->filtrar($dir, $extension);
+    }
+    
+    /**
+     * Compara combinatoria directorio/extension para saber si aplica filtro.
+     * @author Fiko Bórquez <darkshinjis@gmail.com>
+     * @since  Enero 2014
+     * @param string $dir Directorio al que se le aplica filtro.
+     * @param string $ext Extension a filtrar.
+     * @return boolean
+     */
+    private function filtrar($dir, $ext){
+      if(key_exists($dir, $this->filtros)){
+        if(in_array($ext, $this->filtros[$dir])){
+          return true;
+        }else{
+          return false;
+        }
+      }else{
+        return false;
+      }
     }
 }
 

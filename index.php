@@ -14,7 +14,16 @@
 
         // Instanciar clase
         try {
-            $respaldador = new Respaldador("Respaldo05", "respaldos");
+            $filtros = array();
+            
+            // Establecer filtro de directorio completo
+            $filtros["\admin"] = array('*');
+            
+            // Establecer filtro de extension dentro de un directorio
+            $filtros["\wiki"] = array('php');
+            
+            
+            $respaldador = new Respaldador("Respaldo05", "respaldos", null, $filtros);
             $respaldador->respaldar();
             
             if ($respaldador->getError() == ''){
