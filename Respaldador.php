@@ -75,6 +75,7 @@ class Respaldador {
      * Configura el nombre que tendra el respaldo
      */
     public function setNombre($nombre){
+        
         if ($this->validateNombre($nombre)) {
             $this->nombre = $nombre;
             return true;
@@ -172,17 +173,26 @@ class Respaldador {
     }
 
     /*
-     * Valida que el nombre cumpla condiciones dadas
+     * Valida que el nombre cumpla condiciones dadas.
+     * Tambien realiza saneamiento.
+     * 
+     * @author Fiko Bórquez <darkshinjis@gmail.com>
+     * @since  Enero 2014
+     * @param  string &$nombre Nombre que tendra el archivo de respaldo.
+     * @return boolean
+     * 
      */
-    private function validateNombre(&$nombre) {
+    private function validateNombre(&$nombre){
         // @todo realizar saneamiento de nombre de archivo segun S.O
 
         $nombre = trim($nombre);
 
         // Validar que el directorio este configurado en la clase
-        if (empty($this->directorio)) {
+        if (empty($this->directorio)){
             $this->error = "El atributo directorio no ha sido configurado.";
             return false;
+        }else{
+            return true;
         }
     }
 
