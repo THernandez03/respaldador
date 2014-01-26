@@ -169,17 +169,22 @@ class Respaldador {
             return false;
         }
 
-
-        // Validar que no exista un respaldo con ese nombre
-        $archivo = $this->ruta . DIRECTORY_SEPARATOR . $this->directorio . DIRECTORY_SEPARATOR . $nombre . '.zip';
-
-        if (file_exists($archivo)) {
-            $this->error = "Ya existe un respaldo con ese nombre en el directorio.";
-            return false;
-        } else {
-            return true;
-        }
-    }
+    /**
+     * Contiene todas las validaciones que se deben realizar antes de poceder a
+     * setearlas a la propiedad de la clase
+     * @author Tomás Hernández <tomas.hernandez03@gmail.com>
+     * @since  Enero 2014
+     * @param  string $archivo ruta + directorio + nombre del archivo que se
+     *                         quiere setear
+     * @return boolean
+     */
+    private function validateArchivo(&$archivo){
+      if (file_exists($archivo)) {
+          $this->error = "Ya existe un respaldo con ese nombre en el directorio.";
+          return false;
+      } else {
+          return true;
+      }
 
     private function comprimir($dir, &$zip) {
 
