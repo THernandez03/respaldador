@@ -41,26 +41,24 @@ class Respaldador {
      * Realiza el respaldo del sitio en formato zip.
      */
     public function respaldar() {
-        if (empty($this->directorio) || empty($this->nombre)) {
-            $this->error = 'No se puede crear respaldo, ya que no ha sido configurado el atributo directorio o nombre.';
-            return false;
+        if(!empty($this->directorio) && !empty($this->nombre) && $this->generateArchivo()){
+          $respaldo = new ZipArchive();
+
+          if ($respaldo->open($this->archivo, ZIPARCHIVE::CREATE) !== true ) {
+              $this->error = "No se puede crear archivo .zip que almacenara el respaldo";
+              return false;
+          }
+
+          $this->comprimir($this->ruta, $respaldo);
+
+          $respaldo->close();
+
+          $this->url = 'http://' . $_SERVER['SERVER_NAME'] . '/' . $this->directorio . '/' . $this->nombre . '.zip';
+          $this->error = '';
+        }else{
+          $this->error = 'No se puede crear respaldo, ya que no ha sido configurado el atributo directorio o nombre.';
+          return false;
         }
-
-        $respaldo = new ZipArchive();
-        $archivo = $this->ruta . DIRECTORY_SEPARATOR . $this->directorio . DIRECTORY_SEPARATOR . $this->nombre . '.zip';
-
-        if ($respaldo->open($archivo, ZIPARCHIVE::CREATE) !== true ) {
-            $this->error = "No se puede crear archivo .zip que almacenara el respaldo";
-            return false;
-        }
-
-        $this->comprimir($this->ruta, $respaldo);
-
-        $respaldo->close();
-
-        $this->url = 'http://' . $_SERVER['SERVER_NAME'] . '/' . $this->directorio . '/' . $this->nombre . '.zip';
-        $this->error = '';
-
     }
 
 
@@ -103,6 +101,24 @@ class Respaldador {
             return true;
         } else {
             $this->nombre = "";
+            return false;
+        }
+    }
+
+    /**
+     * Permite crear el nombre del archivo incluyendo las ruta y directorio
+     * @author Tomás Hernández <tomas.hernandez03@gmail.com>
+     * @since  Enero 2014
+     * @return string
+     */
+    private function generateArchivo(){
+        $archivo = $this->ruta . DIRECTORY_SEPARATOR . $this->directorio . DIRECTORY_SEPARATOR . $this->nombre . '.zip';
+
+        if ($this->validateArchivo($archivo)) {
+            $this->archivo = $archivo;
+            return true;
+        } else {
+            $this->archivo = "";
             return false;
         }
     }
