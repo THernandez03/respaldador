@@ -184,6 +184,7 @@ class Respaldador {
             $this->error = "El atributo directorio no ha sido configurado.";
             return false;
         }
+    }
 
     /**
      * Contiene todas las validaciones que se deben realizar antes de poceder a
@@ -201,6 +202,7 @@ class Respaldador {
       } else {
           return true;
       }
+    }
 
     private function comprimir($dir, &$zip) {
 
