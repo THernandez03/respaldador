@@ -15,6 +15,7 @@ Características:
 ----------------
   * Respaldo en formato .zip en directorio, existente o no, en la raíz del servidor.
   * Filtrado de archivos a excluir del respaldo según directorio y extensión.
+  * Soporte multi-idioma para mensajes de error.
   
 
 Agradecimientos a:
