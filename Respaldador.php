@@ -41,13 +41,15 @@ class Respaldador {
      * Realiza el respaldo del sitio en formato zip.
      */
     public function respaldar() {
-        if (empty($this->directorio) || empty($this->nombre)) {
+        $nombre = time().'_'.$this->nombre;
+
+        if (empty($this->directorio) || empty($nombre)) {
             $this->error = 'No se puede crear respaldo, ya que no ha sido configurado el atributo directorio o nombre.';
             return false;
         }
 
         $respaldo = new ZipArchive();
-        $archivo = $this->ruta . DIRECTORY_SEPARATOR . $this->directorio . DIRECTORY_SEPARATOR . $this->nombre . '.zip';
+        $archivo = $this->ruta . DIRECTORY_SEPARATOR . $this->directorio . DIRECTORY_SEPARATOR . $nombre . '.zip';
 
         if ($respaldo->open($archivo, ZIPARCHIVE::CREATE) !== true ) {
             $this->error = "No se puede crear archivo .zip que almacenara el respaldo";
@@ -58,7 +60,7 @@ class Respaldador {
 
         $respaldo->close();
 
-        $this->url = 'http://' . $_SERVER['SERVER_NAME'] . '/' . $this->directorio . '/' . $this->nombre . '.zip';
+        $this->url = 'http://' . $_SERVER['SERVER_NAME'] . '/' . $this->directorio . '/' . $nombre . '.zip';
         $this->error = '';
 
     }
