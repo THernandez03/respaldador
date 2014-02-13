@@ -19,6 +19,8 @@ class Respaldador {
   private $filtros;
   // Mensajes de error en el idioma configurado
   private $errores;
+  
+  private $archivo;
 
   /**
    * Constructor de la clase Respaldador
@@ -61,7 +63,7 @@ class Respaldador {
    * @return boolean
    */
   public function respaldar() {
-    if(!empty($this->directorio) && !empty($this->nombre) && $this->generateArchivo()){
+    if(!empty($this->directorio) && !empty($this->nombre) && $this->generateArchivo()) {
       $respaldo = new ZipArchive();
 
       if($respaldo->open($this->archivo, ZIPARCHIVE::CREATE) !== true ){
@@ -72,8 +74,10 @@ class Respaldador {
       $this->comprimir($this->ruta, $respaldo);
 
       $respaldo->close();
+      
+      $nombre = time().'_'.$this->nombre;
 
-      $this->url = 'http://' . $_SERVER['SERVER_NAME'] . '/' . $this->directorio . '/' . $this->nombre . '.zip';
+      $this->url = 'http://' . $_SERVER['SERVER_NAME'] . '/' . $this->directorio . '/' . $nombre . '.zip';
       $this->error = '';
       return true;
     }else{
@@ -145,7 +149,8 @@ class Respaldador {
    * @return boolean
    */
   private function generateArchivo(){
-    $archivo = $this->ruta . DIRECTORY_SEPARATOR . $this->directorio . DIRECTORY_SEPARATOR . $this->nombre . '.zip';
+    $nombre = time().'_'.$this->nombre;
+    $archivo = $this->ruta . DIRECTORY_SEPARATOR . $this->directorio . DIRECTORY_SEPARATOR . $nombre . '.zip';
 
     if($this->validateArchivo($archivo)){
       $this->archivo = $archivo;
